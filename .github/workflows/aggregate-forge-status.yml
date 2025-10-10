@@ -62,6 +62,8 @@ jobs:
               console.log('MTI: ' + mtiIssues.length + ' items retrieved');
             } catch (error) {
               console.error('MTI forge access error: ' + error.message);
+            }
+            
             const mapcoData = mapcoIssues.map(issue => {
               const priorityLabel = issue.labels.find(l => 
                 ['alpha', 'beta', 'gamma', 'delta'].includes(l.name.toLowerCase())
