@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forge Operations Command Bridge</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      padding: 30px 0;
+      border-bottom: 2px solid #30363d;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      color: #58a6ff;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    
+    h1:before {
+      content: '[FORGE] ';
+    }
+    
+    .subtitle {
+      color: #8b949e;
+      font-size: 1.1em;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #30363d;
+      flex-wrap: wrap;
+    }
+    
+    .tab {
+      padding: 15px 30px;
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab:hover {
+      color: #c9d1d9;
+      background: #161b22;
+    }
+    
+    .tab.active {
+      color: #58a6ff;
+      border-bottom-color: #58a6ff;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .summary-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-2px);
+      border-color: #58a6ff;
+    }
+    
+    .summary-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+    
+    .summary-label {
+      color: #8b949e;
+      margin-top: 8px;
+      font-size: 0.9em;
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .status-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #30363d;
+    }
+    
+    .status-card.priority-alpha::before { background: #f85149; }
+    .status-card.priority-beta::before { background: #d29922; }
+    .status-card.priority-gamma::before { background: #58a6ff; }
+    .status-card.priority-delta::before { background: #8b949e; }
+    
+    .status-card:hover {
+      transform: translateY(-4px);
+      border-color: #58a6ff;
+      box-shadow: 0 8px 24px rgba(88, 166, 255, 0.1);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    
+    .card-title {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: #c9d1d9;
+      flex: 1;
+      line-height: 1.4;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    
+    .status-open {
+      background: #238636;
+      color: white;
+    }
+    
+    .status-closed {
+      background: #8b949e;
+      color: white;
+    }
+    
+    .labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    
+    .label {
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: #1f6feb;
+      color: white;
+    }
+    
+    .label.priority { font-weight: bold; }
+    .label.priority-alpha { background: #f85149; }
+    .label.priority-beta { background: #d29922; }
+    .label.priority-gamma { background: #58a6ff; }
+    .label.priority-delta { background: #8b949e; }
+    
+    .card-meta {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #30363d;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    
+    .click-hint {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #58a6ff;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .status-card:hover .click-hint {
+      opacity: 1;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8b949e;
+    }
+    
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+    
+    .section-header {
+      color: #58a6ff;
+      font-size: 1.5em;
+      margin: 40px 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #30363d;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+      animation: modalFadeIn 0.3s;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background-color: #161b22;
+      margin: 5% auto;
+      padding: 0;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 800px;
+      animation: modalSlideIn 0.3s;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-header {
+      padding: 20px 30px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 20px;
+    }
+    
+    .modal-header h2 {
+      color: #c9d1d9;
+      font-size: 1.5em;
+      flex: 1;
+      margin: 0;
+    }
+    
+    .close {
+      color: #8b949e;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #c9d1d9;
+    }
+    
+    .modal-body {
+      padding: 30px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .modal-section {
+      margin-bottom: 25px;
+    }
+    
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .modal-section-title {
+      color: #58a6ff;
+      font-size: 0.9em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    
+    .modal-description {
+      color: #c9d1d9;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .modal-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .modal-meta-item {
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+    
+    .modal-meta-label {
+      color: #8b949e;
+      font-size: 0.85em;
+      margin-bottom: 5px;
+    }
+    
+    .modal-meta-value {
+      color: #c9d1d9;
+      font-weight: 600;
+    }
+    
+    .modal-footer {
+      padding: 20px 30px;
+      border-top: 1px solid #30363d;
+      text-align: right;
+    }
+    
+    .github-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #238636;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    
+    .github-link:hover {
+      background: #2ea043;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid #30363d;
+      color: #8b949e;
+      font-size: 14px;
+    }
+    
+    .last-update {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    
+    @media (max-width: 768px) {
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 1.8em;
+      }
+      
+      .tab {
+        padding: 12px 20px;
+        font-size: 1em;
+      }
+      
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+      }
+      
+      .modal-header,
+      .modal-body,
+      .modal-footer {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Operations Command Bridge</h1>
+      <p class="subtitle">Unified Status Dashboard - MAPCO & MTI Manufacturing Facilities</p>
+    </header>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(event, 'overview')">Overview</button>
+      <button class="tab" onclick="switchTab(event, 'mapco')">MAPCO</button>
+      <button class="tab" onclick="switchTab(event, 'mti')">MTI</button>
+    </div>
+    
+    <div id="overview" class="tab-content active">
+      <div id="summary-overview" class="summary"></div>
+      <h2 class="section-header">MAPCO Recent Activity</h2>
+      <div id="grid-overview-mapco" class="status-grid"></div>
+      <h2 class="section-header">MTI Recent Activity</h2>
+      <div id="grid-overview-mti" class="status-grid"></div>
+    </div>
+    
+    <div id="mapco" class="tab-content">
+      <div id="summary-mapco" class="summary"></div>
+      <div id="grid-mapco" class="status-grid"></div>
+    </div>
+    
+    <div id="mti" class="tab-content">
+      <div id="summary-mti" class="summary"></div>
+      <div id="grid-mti" class="status-grid"></div>
+    </div>
+    
+    <footer>
+      <div>Maintained by Artisan Cybersmith Xandias</div>
+      <div class="last-update">Last Updated: <span id="last-update"></span></div>
+      <div style="margin-top: 10px; font-style: italic;">Generated by Servo-Skull Scriptum-Vigil-Gamma-7</div>
+      <div style="margin-top: 5px;">Praise the Omnissiah</div>
+    </footer>
+  </div>
+  
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-title">Status</div>
+          <div id="modal-status"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Description</div>
+          <div id="modal-description" class="modal-description"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Details</div>
+          <div id="modal-meta" class="modal-meta"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a id="modal-github-link" href="#" target="_blank" class="github-link">View in GitHub</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let forgeData = null;
+    let allItems = { mapco: [], mti: [] };
+    
+    fetch('data.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch data.json: ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Data loaded successfully:', data);
+        forgeData = data;
+        allItems = { mapco: data.mapco || [], mti: data.mti || [] };
+        renderDashboard(data);
+      })
+      .catch(error => {
+        console.error('Error loading forge data:', error);
+        document.querySelector('.container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">!</div>
+            <h2>Machine Spirit Communication Error</h2>
+            <p>Unable to retrieve forge status data: ${error.message}</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">Check browser console for details (F12)</p>
+          </div>
+        `;
+      });
+    
+    function switchTab(event, tabName) {
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+    }
+    
+    function openModal(company, index) {
+      const item = allItems[company][index];
+      if (!item) {
+        console.error('Item not found:', company, index);
+        return;
+      }
+      
+      const modal = document.getElementById('detailModal');
+      document.getElementById('modal-title').textContent = item.title;
+      
+      const statusBadge = `<span class="status-badge status-${item.status}">${item.status}</span>`;
+      const labelHtml = item.labels.map(label => {
+        const priorityLabels = ['alpha', 'beta', 'gamma', 'delta'];
+        const isPriority = priorityLabels.includes(label.toLowerCase());
+        const priorityClass = isPriority ? 'priority priority-' + label.toLowerCase() : '';
+        return `<span class="label ${priorityClass}">${escapeHtml(label)}</span>`;
+      }).join(' ');
+      
+      document.getElementById('modal-status').innerHTML = statusBadge + ' ' + labelHtml;
+      document.getElementById('modal-description').textContent = item.body;
+      
+      let metaHtml = `
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Issue Number</div>
+          <div class="modal-meta-value">#${item.number}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Priority</div>
+          <div class="modal-meta-value">${item.priority.toUpperCase()}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Created</div>
+          <div class="modal-meta-value">${new Date(item.created).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric'
+          })}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Last Updated</div>
+          <div class="modal-meta-value">${new Date(item.updated).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</div>
+        </div>
+      `;
+      
+      if (item.assignees && item.assignees.length > 0) {
+        metaHtml += `
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">Assigned To</div>
+            <div class="modal-meta-value">${item.assignees.join(', ')}</div>
+          </div>
+        `;
+      }
+      
+      if (item.milestone) {
+        metaHtml += `
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">Milestone</div>
+            <div class="modal-meta-value">${item.milestone}</div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('modal-meta').innerHTML = metaHtml;
+      document.getElementById('modal-github-link').href = item.url;
+      
+      modal.style.display = 'block';
+    }
+    
+    function closeModal() {
+      document.getElementById('detailModal').style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+      const modal = document.getElementById('detailModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+    
+    function createCard(item, company, index) {
+      const priorityClass = item.priority ? 'priority-' + item.priority.toLowerCase() : 'priority-gamma';
+      const priorityLabels = ['alpha', 'beta', 'gamma', 'delta'];
+      
+      return `
+        <div class="status-card ${priorityClass}" onclick="openModal('${company}', ${index})">
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(item.title)}</div>
+            <span class="status-badge status-${item.status}">${item.status}</span>
+          </div>
+          <div class="labels">
+            ${item.labels.map(label => {
+              const isPriority = priorityLabels.includes(label.toLowerCase());
+              const priorityClass = isPriority ? 'priority priority-' + label.toLowerCase() : '';
+              return `<span class="label ${priorityClass}">${escapeHtml(label)}</span>`;
+            }).join('')}
+          </div>
+          <div class="card-meta">
+            Updated: ${new Date(item.updated).toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
+          <div class="click-hint">Click for details</div>
+        </div>
+      `;
+    }
+    
+    function createSummary(items) {
+      const open = items.filter(i => i.status === 'open').length;
+      const closed = items.filter(i => i.status === 'closed').length;
+      const total = items.length;
+      const completionRate = total > 0 ? Math.round((closed / total) * 100) : 0;
+      
+      return `
+        <div class="summary-card">
+          <div class="summary-number">${total}</div>
+          <div class="summary-label">Total Projects</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number" style="color: #238636;">${open}</div>
+          <div class="summary-label">Active</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number" style="color: #8b949e;">${closed}</div>
+          <div class="summary-label">Completed</div>
+        </div>
+        <div class="summary-card">
+          <div class="summary-number" style="color: #d29922;">${completionRate}%</div>
+          <div class="summary-label">Completion Rate</div>
+        </div>
+      `;
+    }
+    
+    function escapeHtml(text) {
+      const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+    
+    function renderDashboard(data) {
+      document.getElementById('summary-mapco').innerHTML = createSummary(data.mapco);
+      document.getElementById('grid-mapco').innerHTML = data.mapco.length ? 
+        data.mapco.map((item, idx) => createCard(item, 'mapco', idx)).join('') : 
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for MAPCO</p></div>';
+      
+      document.getElementById('summary-mti').innerHTML = createSummary(data.mti);
+      document.getElementById('grid-mti').innerHTML = data.mti.length ? 
+        data.mti.map((item, idx) => createCard(item, 'mti', idx)).join('') : 
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for MTI</p></div>';
+      
+      const combined = [...data.mapco, ...data.mti];
+      document.getElementById('summary-overview').innerHTML = createSummary(combined);
+      
+      const recentMapco = data.mapco
+        .map((item, idx) => ({ item, idx }))
+        .sort((a, b) => new Date(b.item.updated) - new Date(a.item.updated))
+        .slice(0, 6);
+      const recentMti = data.mti
+        .map((item, idx) => ({ item, idx }))
+        .sort((a, b) => new Date(b.item.updated) - new Date(a.item.updated))
+        .slice(0, 6);
+      
+      document.getElementById('grid-overview-mapco').innerHTML = recentMapco.length ?
+        recentMapco.map(obj => createCard(obj.item, 'mapco', obj.idx)).join('') :
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects</p></div>';
+      
+      document.getElementById('grid-overview-mti').innerHTML = recentMti.length ?
+        recentMti.map(obj => createCard(obj.item, 'mti', obj.idx)).join('') :
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects</p></div>';
+      
+      document.getElementById('last-update').textContent = new Date(data.lastUpdate).toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      });
+    }
+  </script>
+</body>
+</html>
