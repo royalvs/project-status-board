@@ -64,7 +64,7 @@ jobs:
               console.error('MTI forge access error: ' + error.message);
             }
             
-            const mapcoData = mapcoIssues.map(issue => {
+const mapcoData = mapcoIssues.map(issue => {
               const priorityLabel = issue.labels.find(l => 
                 ['alpha', 'beta', 'gamma', 'delta'].includes(l.name.toLowerCase())
               );
@@ -78,6 +78,7 @@ jobs:
                 priority: priorityLabel ? priorityLabel.name.toLowerCase() : 'gamma',
                 updated: issue.updated_at,
                 created: issue.created_at,
+                closed_at: issue.closed_at,
                 number: issue.number,
                 body: issue.body || 'No description provided',
                 url: issue.html_url,
@@ -100,6 +101,7 @@ jobs:
                 priority: priorityLabel ? priorityLabel.name.toLowerCase() : 'gamma',
                 updated: issue.updated_at,
                 created: issue.created_at,
+                closed_at: issue.closed_at,
                 number: issue.number,
                 body: issue.body || 'No description provided',
                 url: issue.html_url,
