@@ -138,6 +138,7 @@
       transition: all 0.3s;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
     
     .status-card::before {
@@ -227,6 +228,19 @@
       color: #8b949e;
     }
     
+    .click-hint {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: #58a6ff;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .status-card:hover .click-hint {
+      opacity: 1;
+    }
+    
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -245,6 +259,153 @@
       margin: 40px 0 20px 0;
       padding-bottom: 10px;
       border-bottom: 1px solid #30363d;
+    }
+    
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+      animation: modalFadeIn 0.3s;
+    }
+    
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal-content {
+      background-color: #161b22;
+      margin: 5% auto;
+      padding: 0;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 800px;
+      animation: modalSlideIn 0.3s;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .modal-header {
+      padding: 20px 30px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 20px;
+    }
+    
+    .modal-header h2 {
+      color: #c9d1d9;
+      font-size: 1.5em;
+      flex: 1;
+      margin: 0;
+    }
+    
+    .close {
+      color: #8b949e;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #c9d1d9;
+    }
+    
+    .modal-body {
+      padding: 30px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    
+    .modal-section {
+      margin-bottom: 25px;
+    }
+    
+    .modal-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .modal-section-title {
+      color: #58a6ff;
+      font-size: 0.9em;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    
+    .modal-description {
+      color: #c9d1d9;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    .modal-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .modal-meta-item {
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+    
+    .modal-meta-label {
+      color: #8b949e;
+      font-size: 0.85em;
+      margin-bottom: 5px;
+    }
+    
+    .modal-meta-value {
+      color: #c9d1d9;
+      font-weight: 600;
+    }
+    
+    .modal-footer {
+      padding: 20px 30px;
+      border-top: 1px solid #30363d;
+      text-align: right;
+    }
+    
+    .github-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: #238636;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    
+    .github-link:hover {
+      background: #2ea043;
     }
     
     footer {
@@ -274,6 +435,17 @@
         padding: 12px 20px;
         font-size: 1em;
       }
+      
+      .modal-content {
+        width: 95%;
+        margin: 10% auto;
+      }
+      
+      .modal-header,
+      .modal-body,
+      .modal-footer {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -281,31 +453,31 @@
   <div class="container">
     <header>
       <h1>Operations Command Bridge</h1>
-      <p class="subtitle">Unified Status Dashboard for Both Manufacturing Facilities</p>
+      <p class="subtitle">Unified Status Dashboard - MAPCO & MTI Manufacturing Facilities</p>
     </header>
     
     <div class="tabs">
       <button class="tab active" onclick="switchTab(event, 'overview')">Overview</button>
-      <button class="tab" onclick="switchTab(event, 'company-a')">Company A</button>
-      <button class="tab" onclick="switchTab(event, 'company-b')">Company B</button>
+      <button class="tab" onclick="switchTab(event, 'mapco')">MAPCO</button>
+      <button class="tab" onclick="switchTab(event, 'mti')">MTI</button>
     </div>
     
     <div id="overview" class="tab-content active">
       <div id="summary-overview" class="summary"></div>
-      <h2 class="section-header">Company A Recent Activity</h2>
-      <div id="grid-overview-a" class="status-grid"></div>
-      <h2 class="section-header">Company B Recent Activity</h2>
-      <div id="grid-overview-b" class="status-grid"></div>
+      <h2 class="section-header">MAPCO Recent Activity</h2>
+      <div id="grid-overview-mapco" class="status-grid"></div>
+      <h2 class="section-header">MTI Recent Activity</h2>
+      <div id="grid-overview-mti" class="status-grid"></div>
     </div>
     
-    <div id="company-a" class="tab-content">
-      <div id="summary-a" class="summary"></div>
-      <div id="grid-a" class="status-grid"></div>
+    <div id="mapco" class="tab-content">
+      <div id="summary-mapco" class="summary"></div>
+      <div id="grid-mapco" class="status-grid"></div>
     </div>
     
-    <div id="company-b" class="tab-content">
-      <div id="summary-b" class="summary"></div>
-      <div id="grid-b" class="status-grid"></div>
+    <div id="mti" class="tab-content">
+      <div id="summary-mti" class="summary"></div>
+      <div id="grid-mti" class="status-grid"></div>
     </div>
     
     <footer>
@@ -316,10 +488,40 @@
     </footer>
   </div>
   
+  <!-- Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title"></h2>
+        <span class="close" onclick="closeModal()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="modal-section">
+          <div class="modal-section-title">Status</div>
+          <div id="modal-status"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Description</div>
+          <div id="modal-description" class="modal-description"></div>
+        </div>
+        <div class="modal-section">
+          <div class="modal-section-title">Details</div>
+          <div id="modal-meta" class="modal-meta"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a id="modal-github-link" href="#" target="_blank" class="github-link">View in GitHub</a>
+      </div>
+    </div>
+  </div>
+  
   <script>
+    let forgeData = null;
+    
     fetch('data.json')
       .then(response => response.json())
       .then(data => {
+        forgeData = data;
         renderDashboard(data);
       })
       .catch(error => {
@@ -341,12 +543,91 @@
       document.getElementById(tabName).classList.add('active');
     }
     
+    function openModal(item) {
+      const modal = document.getElementById('detailModal');
+      document.getElementById('modal-title').textContent = item.title;
+      
+      const statusBadge = `<span class="status-badge status-${item.status}">${item.status}</span>`;
+      const labelHtml = item.labels.map(label => {
+        const priorityLabels = ['alpha', 'beta', 'gamma', 'delta'];
+        const isPriority = priorityLabels.includes(label.toLowerCase());
+        const priorityClass = isPriority ? 'priority priority-' + label.toLowerCase() : '';
+        return `<span class="label ${priorityClass}">${escapeHtml(label)}</span>`;
+      }).join(' ');
+      
+      document.getElementById('modal-status').innerHTML = statusBadge + ' ' + labelHtml;
+      document.getElementById('modal-description').textContent = item.body;
+      
+      const metaHtml = `
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Issue Number</div>
+          <div class="modal-meta-value">#${item.number}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Priority</div>
+          <div class="modal-meta-value">${item.priority.toUpperCase()}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Created</div>
+          <div class="modal-meta-value">${new Date(item.created).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric'
+          })}</div>
+        </div>
+        <div class="modal-meta-item">
+          <div class="modal-meta-label">Last Updated</div>
+          <div class="modal-meta-value">${new Date(item.updated).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</div>
+        </div>
+        ${item.assignees.length > 0 ? `
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">Assigned To</div>
+            <div class="modal-meta-value">${item.assignees.join(', ')}</div>
+          </div>
+        ` : ''}
+        ${item.milestone ? `
+          <div class="modal-meta-item">
+            <div class="modal-meta-label">Milestone</div>
+            <div class="modal-meta-value">${item.milestone}</div>
+          </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('modal-meta').innerHTML = metaHtml;
+      document.getElementById('modal-github-link').href = item.url;
+      
+      modal.style.display = 'block';
+    }
+    
+    function closeModal() {
+      document.getElementById('detailModal').style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+      const modal = document.getElementById('detailModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+    
     function createCard(item) {
       const priorityClass = item.priority ? 'priority-' + item.priority.toLowerCase() : 'priority-gamma';
       const priorityLabels = ['alpha', 'beta', 'gamma', 'delta'];
       
       return `
-        <div class="status-card ${priorityClass}">
+        <div class="status-card ${priorityClass}" onclick='openModal(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
           <div class="card-header">
             <div class="card-title">${escapeHtml(item.title)}</div>
             <span class="status-badge status-${item.status}">${item.status}</span>
@@ -367,6 +648,7 @@
               minute: '2-digit'
             })}
           </div>
+          <div class="click-hint">Click for details</div>
         </div>
       `;
     }
@@ -409,32 +691,32 @@
     }
     
     function renderDashboard(data) {
-      document.getElementById('summary-a').innerHTML = createSummary(data.companyA);
-      document.getElementById('grid-a').innerHTML = data.companyA.length ? 
-        data.companyA.map(createCard).join('') : 
-        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for Company A</p></div>';
+      document.getElementById('summary-mapco').innerHTML = createSummary(data.mapco);
+      document.getElementById('grid-mapco').innerHTML = data.mapco.length ? 
+        data.mapco.map(createCard).join('') : 
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for MAPCO</p></div>';
       
-      document.getElementById('summary-b').innerHTML = createSummary(data.companyB);
-      document.getElementById('grid-b').innerHTML = data.companyB.length ? 
-        data.companyB.map(createCard).join('') : 
-        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for Company B</p></div>';
+      document.getElementById('summary-mti').innerHTML = createSummary(data.mti);
+      document.getElementById('grid-mti').innerHTML = data.mti.length ? 
+        data.mti.map(createCard).join('') : 
+        '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects for MTI</p></div>';
       
-      const allItems = [...data.companyA, ...data.companyB];
+      const allItems = [...data.mapco, ...data.mti];
       document.getElementById('summary-overview').innerHTML = createSummary(allItems);
       
-      const recentA = data.companyA
+      const recentMapco = data.mapco
         .sort((a, b) => new Date(b.updated) - new Date(a.updated))
         .slice(0, 6);
-      const recentB = data.companyB
+      const recentMti = data.mti
         .sort((a, b) => new Date(b.updated) - new Date(a.updated))
         .slice(0, 6);
       
-      document.getElementById('grid-overview-a').innerHTML = recentA.length ?
-        recentA.map(createCard).join('') :
+      document.getElementById('grid-overview-mapco').innerHTML = recentMapco.length ?
+        recentMapco.map(createCard).join('') :
         '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects</p></div>';
       
-      document.getElementById('grid-overview-b').innerHTML = recentB.length ?
-        recentB.map(createCard).join('') :
+      document.getElementById('grid-overview-mti').innerHTML = recentMti.length ?
+        recentMti.map(createCard).join('') :
         '<div class="empty-state"><div class="empty-state-icon">-</div><p>No active projects</p></div>';
       
       document.getElementById('last-update').textContent = new Date(data.lastUpdate).toLocaleString('en-US', {
