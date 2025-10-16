@@ -1,6 +1,24 @@
 {
   "mapco": [
     {
+      "title": "New SQT Tool (CRAFT)",
+      "status": "open",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2025-10-16T15:26:25Z",
+      "created": "2025-10-16T15:21:20Z",
+      "closed_at": null,
+      "number": 2,
+      "body": "Implement a new SQT Tool for MAPCO.\n\nRequirements:\n-\n-\n-\n\nWeekly Meeting?: Yes Tuesdays at 1:30pm",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/2",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    },
+    {
       "title": "The Universal Laws of the Cult Mechanicus",
       "status": "open",
       "labels": [
@@ -20,6 +38,6 @@
     }
   ],
   "mti": [],
-  "lastUpdate": "2025-10-16T15:22:25.970Z",
+  "lastUpdate": "2025-10-16T15:31:11.236Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
