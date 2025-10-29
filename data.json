@@ -20,14 +20,14 @@
     },
     {
       "title": "The Universal Laws of the Cult Mechanicus",
-      "status": "open",
+      "status": "closed",
       "labels": [
         "alpha"
       ],
       "priority": "alpha",
-      "updated": "2025-10-16T15:01:40Z",
+      "updated": "2025-10-29T21:11:21Z",
       "created": "2025-10-09T20:12:46Z",
-      "closed_at": null,
+      "closed_at": "2025-10-29T21:11:21Z",
       "number": 1,
       "body": "Universal Laws of the Cult Mechanicus\n\nThe Mysteries\n\n    01. Life is directed motion.\n\n    02. The spirit is the spark of life.\n\n    03. Sentience is the ability to learn the value of knowledge.\n\n    04. Intellect is the understanding of knowledge.\n\n    05. Sentience is the basest form of Intellect.\n\n    06. Understanding is the True Path to Comprehension.\n\n    07. Comprehension is the key to all things.\n\n    08. The Omnissiah knows all, comprehends all.\n\nThe Warnings\n\n    09. The Alien mechanism is a perversion of the True Path.\n\n    10. The soul is the conscience of sentience.\n\n    11. A soul can be bestowed only by the Omnissiah.\n\n    12. The Soulless sentience (Necrons) is the enemy of all life.\n\n    13. The knowledge of the Ancients stands beyond question.\n\n    14. The Machine Spirit guards the knowledge of the Ancients.\n\n    15. Flesh is fallible, but ritual honours the Machine Spirit.\n\n    16. To break with ritual is to break with faith.",
       "url": "https://github.com/royalvs/MAPCO-Programs/issues/1",
@@ -38,6 +38,6 @@
     }
   ],
   "mti": [],
-  "lastUpdate": "2025-10-29T20:16:59.829Z",
+  "lastUpdate": "2025-10-29T21:24:37.902Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
