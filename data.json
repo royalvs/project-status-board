@@ -19,7 +19,26 @@
       "milestone": null
     }
   ],
-  "mti": [],
-  "lastUpdate": "2025-10-30T18:14:04.748Z",
+  "mti": [
+    {
+      "title": "TrailerQuoteMonitor - DriveWorks to REDWOOD Database Integration",
+      "status": "open",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2025-10-30T19:08:05Z",
+      "created": "2025-10-30T19:01:04Z",
+      "closed_at": null,
+      "number": 1,
+      "body": "## Overview\nWindows Service that monitors BANYAN file server for new trailer quote folders from DriveWorks and automatically uploads quote data to REDWOOD database.\n\n## Current Status\n- Initial implementation complete\n- Service monitors BANYAN DriveWorks Group Content Testing Specifications\n- Processes QuoteInfo CSV files\n- Trailer Options processing - pending data availability\n- Inserts data into MEC_TrailerQuoteMaster and MEC_TrailerQuoteDetails tables\n- Test mode available for manual quote processing\n- CLAUDE.md documentation created\n\n## Project Location\nMTI-Programs/DriveWorksToQuoterUpload\n\n## Technology Stack\n- .NET 9.0 Windows Service\n- CsvHelper for CSV processing\n- SQL Server (REDWOOD/SysproCompanyT test database)\n- FileSystemWatcher for real-time monitoring\n\n## Key Features\n- Automatic folder monitoring with pattern matching\n- Atomic database transactions\n- SqlBulkCopy for efficient detail record insertion\n- Test mode for manual quote processing\n- Comprehensive logging (Event Log + file logs)\n\n## Related Projects\nThis is part 1 of the Pipedrive Integration project. A second program for the other direction of integration is planned.\n\n## Next Steps\n- Wait for Trailer Options data to be filled out\n- Complete Trailer Options processing implementation\n- Test with real quote data from DriveWorks\n- Deploy to production server\n- Configure as Windows Service",
+      "url": "https://github.com/royalvs/MTI-Programs/issues/1",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    }
+  ],
+  "lastUpdate": "2025-10-30T19:08:27.872Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
