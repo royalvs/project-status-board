@@ -1,6 +1,24 @@
 {
   "mapco": [
     {
+      "title": "GPC Full Integration",
+      "status": "open",
+      "labels": [
+        "beta"
+      ],
+      "priority": "beta",
+      "updated": "2025-11-12T21:00:29Z",
+      "created": "2025-11-12T21:00:29Z",
+      "closed_at": null,
+      "number": 15,
+      "body": "The base issue for GPC Integration.",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/15",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    },
+    {
       "title": "New SQT Tool (CRAFT)",
       "status": "open",
       "labels": [
@@ -39,6 +57,6 @@
       "milestone": null
     }
   ],
-  "lastUpdate": "2025-11-12T20:17:13.816Z",
+  "lastUpdate": "2025-11-12T21:16:05.761Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
