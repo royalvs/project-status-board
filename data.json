@@ -2,16 +2,16 @@
   "mapco": [
     {
       "title": "GPC Full Integration",
-      "status": "open",
+      "status": "closed",
       "labels": [
         "beta"
       ],
       "priority": "beta",
-      "updated": "2025-11-12T21:00:29Z",
+      "updated": "2025-11-14T19:45:35Z",
       "created": "2025-11-12T21:00:29Z",
-      "closed_at": null,
+      "closed_at": "2025-11-14T19:45:35Z",
       "number": 15,
-      "body": "The base issue for GPC Integration.",
+      "body": "## Overview\nAutomated PowerShell-based integration to transfer PNG files from the GPC Comms App to SharePoint, with structured logging to Seq dashboard for monitoring and troubleshooting.\n\n## Solution Components\n\n### 1. PowerShell Scripts\n- **Move-GPCFilesToSharePoint.ps1** - Main file transfer script with retry logic and error handling\n- **Test-GPCTransfer.ps1** - Testing script that creates sample PNG files and validates the transfer process\n- **Setup-ScheduledTask.ps1** - Automated setup for Windows Scheduled Task (runs every 15 minutes)\n\n### 2. Configuration\n- **appsettings.json** - Centralized configuration for SharePoint connection, source folders, and operational settings\n- Located at: `E:\\Scripts\\GPCTransfer\\` on REDWOOD server\n\n### 3. Authentication\n- **Certificate-based authentication** using Azure AD App Registration\n- App: `GPC-SharePoint-Transfer-v2` (Client ID: `2fbd05b7-d066-495e-bae9-35d1e2d10bba`)\n- Self-signed certificate stored in LocalMachine certificate store on REDWOOD\n- SharePoint API permission: `Sites.ReadWrite.All`\n\n### 4. Logging & Monitoring\n- **Seq Dashboard**: http://mapco-spare-dt4:5341\n- Application name: `GPCTransfer`\n- Structured logging using CLEF format\n- Tracks: file uploads, errors, retries, connection status, and performance metrics\n\n## Features\n\n✅ **Automated File Transfer**: Scans date-based folders (format: yy-MM-dd) going back 7 days  \n✅ **Duplicate Handling**: Automatically renames duplicates (e.g., file-1.png, file-2.png)  \n✅ **Retry Logic**: 3 retry attempts with 10-second delays between attempts  \n✅ **File Lock Detection**: Waits 2 seconds to ensure files aren't being written  \n✅ **Source File Cleanup**: Deletes source files after successful upload  \n✅ **Date Folder Preservation**: Maintains date-based folder structure in SharePoint  \n✅ **Concurrent Uploads**: Supports up to 5 simultaneous file uploads  \n✅ **Comprehensive Logging**: All operations logged to Seq for monitoring  \n\n## Configuration Settings\n\n### Source\n- **Folder**: `E:\\GPC Comms App`\n- **File Extension**: `*.png`\n- **Days to Scan Back**: 7 days\n\n### SharePoint Destination\n- **Site**: https://mtimapco.sharepoint.com/sites/Public_MAPCO\n- **Library**: Shared Documents\n- **Target Folder**: GPC Sales Photos\n- **Folder Structure**: `GPC Sales Photos/{yy-MM-dd}/`\n\n### Scheduled Task\n- **Task Name**: GPC-SharePoint-FileTransfer\n- **Run As**: SYSTEM account\n- **Frequency**: Every 15 minutes\n- **Timeout**: 1 hour\n- **Auto-restart**: Up to 3 retries on failure\n\n## Deployment\n\n### Prerequisites\n- PnP.PowerShell module installed\n- Azure AD App Registration with certificate uploaded\n- Certificate installed in LocalMachine store on REDWOOD\n- SharePoint API permissions granted and admin consent provided\n\n### Installation Location\n```\nE:\\Scripts\\GPCTransfer\\\n├── Move-GPCFilesToSharePoint.ps1\n├── Setup-ScheduledTask.ps1\n├── Test-GPCTransfer.ps1\n└── appsettings.json\n```\n\n### Setup Steps\n1. Install PnP.PowerShell module: `Install-Module PnP.PowerShell -Scope AllUsers`\n2. Create Azure AD App Registration and upload certificate\n3. Grant SharePoint API permissions (Sites.ReadWrite.All)\n4. Copy scripts and configuration to `E:\\Scripts\\GPCTransfer\\`\n5. Update `appsettings.json` with certificate thumbprint\n6. Test: `.\\Test-GPCTransfer.ps1`\n7. Create scheduled task: `.\\Setup-ScheduledTask.ps1`\n\n## Monitoring\n\n### Seq Dashboard Queries\n- **All GPC Transfer Events**: `Application = \"GPCTransfer\"`\n- **Errors Only**: `Application = \"GPCTransfer\" AND @Level = \"Error\"`\n- **Upload Success Rate**: View success/failure metrics in Seq\n\n### Task Management\n```powershell\n# View task status\nGet-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n\n# Start manually\nStart-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n\n# Disable/Enable\nDisable-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\nEnable-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n```\n\n## Testing\n\nRun the test script to validate the integration:\n```powershell\ncd E:\\Scripts\\GPCTransfer\n.\\Test-GPCTransfer.ps1\n```\n\nThe test script will:\n- Create sample PNG files in date-based folders\n- Run the main transfer script\n- Verify files were uploaded to SharePoint\n- Confirm source files were deleted\n\n## Status\n✅ **Complete** - Fully deployed and operational on REDWOOD server  \n✅ **Tested** - Successfully transfers PNG files to SharePoint  \n✅ **Monitored** - Logs visible in Seq dashboard  \n✅ **Automated** - Runs every 15 minutes via Windows Scheduled Task",
       "url": "https://github.com/royalvs/MAPCO-Programs/issues/15",
       "assignees": [
         "royalvs"
@@ -57,6 +57,6 @@
       "milestone": null
     }
   ],
-  "lastUpdate": "2025-11-14T16:19:26.117Z",
+  "lastUpdate": "2025-11-14T19:46:52.819Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
