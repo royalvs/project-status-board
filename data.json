@@ -39,6 +39,22 @@
   ],
   "mti": [
     {
+      "title": "Paycom Data Sync Uplift and Vacation Time Pull",
+      "status": "open",
+      "labels": [
+        "gamma"
+      ],
+      "priority": "gamma",
+      "updated": "2025-11-18T23:10:08Z",
+      "created": "2025-11-18T23:10:08Z",
+      "closed_at": null,
+      "number": 2,
+      "body": "## Overview\n\nUplift the existing Paycom data synchronization system and expand functionality to include vacation time data for both MAPCO and MTI.\n\n**Target: Q1 2026**\n\n## Project Scope\n\n### Phase 1: System Uplift\n- Modernize existing Paycom sync infrastructure\n- Improve reliability and error handling\n- Enhance logging and monitoring capabilities\n\n### Phase 2: Vacation Time Integration\n- Add vacation time data to the list of information pulled from Paycom\n- Retrieve vacation balances for both MAPCO and MTI employees\n- Data will be delivered via the current Paycom SFTP server\n\n## Coordination\n\nRoyal will work with Terri Cornelius at Merritt Companies to configure vacation data exports for both companies to the existing Paycom SFTP server.\n\n## Technical Notes\n\n- Integration with existing SFTP file processing pipeline\n- Data will sync to Syspro employee records\n- Serilog structured logging with Seq integration\n\n## Meetings\n\nBi-weekly project update meetings - schedule TBD",
+      "url": "https://github.com/royalvs/MTI-Programs/issues/2",
+      "assignees": [],
+      "milestone": null
+    },
+    {
       "title": "TrailerQuoteMonitor - DriveWorks to REDWOOD Database Integration",
       "status": "open",
       "labels": [
@@ -57,6 +73,6 @@
       "milestone": null
     }
   ],
-  "lastUpdate": "2025-11-18T20:18:09.868Z",
+  "lastUpdate": "2025-11-18T23:11:21.587Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
