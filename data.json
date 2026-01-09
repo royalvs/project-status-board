@@ -1,6 +1,22 @@
 {
   "mapco": [
     {
+      "title": "CRAFT Soft Launch - POC Notifications & Bug Fixes (January 7, 2026)",
+      "status": "open",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2026-01-09T21:07:53Z",
+      "created": "2026-01-09T21:07:53Z",
+      "closed_at": null,
+      "number": 16,
+      "body": "## CRAFT Soft Launch Completed - Tuesday, January 7, 2026\n\nThe CRAFT (Custom Request And Fabrication Tracker) application has successfully completed its soft launch to production users.\n\n### Major Features Deployed\n\n#### 1. POC-Based Notifications System\n- **Point of Contact routing** instead of department-wide broadcasts\n- Notifications sent only to the specific POC assigned to each job (Sales POC, PC POC, or Engineering POC)\n- Email notifications for new assignments and job updates\n- Toast notifications via SignalR for real-time updates\n- RespondBy deadline reminders for current department POC\n- Self-update exclusion (users don't get notified about their own changes)\n- User preference controls for email and system notifications\n\n#### 2. Centralized Notification Service\n- Windows Service running on REDWOOD server\n- Monitors job assignments and updates every 15 minutes\n- Automatic email delivery via Office 365 SMTP\n- SignalR hub for real-time desktop notifications (port 5050)\n- Seq logging integration for monitoring and troubleshooting\n\n### Bug Fixes & Improvements\n- Fixed debug logging not appearing in Seq (minimum level configuration)\n- Updated network share paths to `\\REDWOOD\\craft`\n- Added UAC elevation to uninstaller script\n- Enhanced logging for database operations and error tracking\n- Fixed background process termination (ShutdownMode configuration)\n- Resolved FK constraint errors during Part Number changes (lock monitoring timer race condition)\n\n### Deployment\n- Desktop app deployed to `\\REDWOOD\\craft\\Desktop`\n- Notification service deployed to `\\REDWOOD\\craft\\NotificationAgent`\n- Auto-update mechanism active for all users\n- Service installation scripts available in `\\REDWOOD\\craft\\Scripts`\n\n### Next Phase\n- Gather user feedback during soft launch period\n- Monitor Seq logs for issues: http://Royal-DT:5341\n- Plan Views implementation (All Jobs, Department filters)\n- Enhanced search functionality with fuzzy matching\n\n---\n\n**Status:** ✅ In Production (Soft Launch)  \n**Version:** 1.0.x series  \n**Users:** MAPCO SALES, PC, and ENGINEERING teams",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/16",
+      "assignees": [],
+      "milestone": null
+    },
+    {
       "title": "GPC Full Integration",
       "status": "closed",
       "labels": [
@@ -73,6 +89,6 @@
       "milestone": null
     }
   ],
-  "lastUpdate": "2026-01-09T20:19:07.354Z",
+  "lastUpdate": "2026-01-09T21:09:29.586Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
