@@ -1,6 +1,94 @@
 {
-  "mapco": [],
-  "mti": [],
-  "lastUpdate": "2026-04-27T17:16:32.525Z",
+  "mapco": [
+    {
+      "title": "CRAFT Soft Launch - POC Notifications & Bug Fixes (January 7, 2026)",
+      "status": "open",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2026-01-09T21:07:53Z",
+      "created": "2026-01-09T21:07:53Z",
+      "closed_at": null,
+      "number": 16,
+      "body": "## CRAFT Soft Launch Completed - Tuesday, January 7, 2026\n\nThe CRAFT (Custom Request And Fabrication Tracker) application has successfully completed its soft launch to production users.\n\n### Major Features Deployed\n\n#### 1. POC-Based Notifications System\n- **Point of Contact routing** instead of department-wide broadcasts\n- Notifications sent only to the specific POC assigned to each job (Sales POC, PC POC, or Engineering POC)\n- Email notifications for new assignments and job updates\n- Toast notifications via SignalR for real-time updates\n- RespondBy deadline reminders for current department POC\n- Self-update exclusion (users don't get notified about their own changes)\n- User preference controls for email and system notifications\n\n#### 2. Centralized Notification Service\n- Windows Service running on REDWOOD server\n- Monitors job assignments and updates every 15 minutes\n- Automatic email delivery via Office 365 SMTP\n- SignalR hub for real-time desktop notifications (port 5050)\n- Seq logging integration for monitoring and troubleshooting\n\n### Bug Fixes & Improvements\n- Fixed debug logging not appearing in Seq (minimum level configuration)\n- Updated network share paths to `\\REDWOOD\\craft`\n- Added UAC elevation to uninstaller script\n- Enhanced logging for database operations and error tracking\n- Fixed background process termination (ShutdownMode configuration)\n- Resolved FK constraint errors during Part Number changes (lock monitoring timer race condition)\n\n### Deployment\n- Desktop app deployed to `\\REDWOOD\\craft\\Desktop`\n- Notification service deployed to `\\REDWOOD\\craft\\NotificationAgent`\n- Auto-update mechanism active for all users\n- Service installation scripts available in `\\REDWOOD\\craft\\Scripts`\n\n### Next Phase\n- Gather user feedback during soft launch period\n- Monitor Seq logs for issues: http://Royal-DT:5341\n- Plan Views implementation (All Jobs, Department filters)\n- Enhanced search functionality with fuzzy matching\n\n---\n\n**Status:** ✅ In Production (Soft Launch)  \n**Version:** 1.0.x series  \n**Users:** MAPCO SALES, PC, and ENGINEERING teams",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/16",
+      "assignees": [],
+      "milestone": null
+    },
+    {
+      "title": "GPC Full Integration",
+      "status": "closed",
+      "labels": [
+        "beta"
+      ],
+      "priority": "beta",
+      "updated": "2025-11-14T19:45:35Z",
+      "created": "2025-11-12T21:00:29Z",
+      "closed_at": "2025-11-14T19:45:35Z",
+      "number": 15,
+      "body": "## Overview\nAutomated PowerShell-based integration to transfer PNG files from the GPC Comms App to SharePoint, with structured logging to Seq dashboard for monitoring and troubleshooting.\n\n## Solution Components\n\n### 1. PowerShell Scripts\n- **Move-GPCFilesToSharePoint.ps1** - Main file transfer script with retry logic and error handling\n- **Test-GPCTransfer.ps1** - Testing script that creates sample PNG files and validates the transfer process\n- **Setup-ScheduledTask.ps1** - Automated setup for Windows Scheduled Task (runs every 15 minutes)\n\n### 2. Configuration\n- **appsettings.json** - Centralized configuration for SharePoint connection, source folders, and operational settings\n- Located at: `E:\\Scripts\\GPCTransfer\\` on REDWOOD server\n\n### 3. Authentication\n- **Certificate-based authentication** using Azure AD App Registration\n- App: `GPC-SharePoint-Transfer-v2` (Client ID: `2fbd05b7-d066-495e-bae9-35d1e2d10bba`)\n- Self-signed certificate stored in LocalMachine certificate store on REDWOOD\n- SharePoint API permission: `Sites.ReadWrite.All`\n\n### 4. Logging & Monitoring\n- **Seq Dashboard**: http://mapco-spare-dt4:5341\n- Application name: `GPCTransfer`\n- Structured logging using CLEF format\n- Tracks: file uploads, errors, retries, connection status, and performance metrics\n\n## Features\n\n✅ **Automated File Transfer**: Scans date-based folders (format: yy-MM-dd) going back 7 days  \n✅ **Duplicate Handling**: Automatically renames duplicates (e.g., file-1.png, file-2.png)  \n✅ **Retry Logic**: 3 retry attempts with 10-second delays between attempts  \n✅ **File Lock Detection**: Waits 2 seconds to ensure files aren't being written  \n✅ **Source File Cleanup**: Deletes source files after successful upload  \n✅ **Date Folder Preservation**: Maintains date-based folder structure in SharePoint  \n✅ **Concurrent Uploads**: Supports up to 5 simultaneous file uploads  \n✅ **Comprehensive Logging**: All operations logged to Seq for monitoring  \n\n## Configuration Settings\n\n### Source\n- **Folder**: `E:\\GPC Comms App`\n- **File Extension**: `*.png`\n- **Days to Scan Back**: 7 days\n\n### SharePoint Destination\n- **Site**: https://mtimapco.sharepoint.com/sites/Public_MAPCO\n- **Library**: Shared Documents\n- **Target Folder**: GPC Sales Photos\n- **Folder Structure**: `GPC Sales Photos/{yy-MM-dd}/`\n\n### Scheduled Task\n- **Task Name**: GPC-SharePoint-FileTransfer\n- **Run As**: SYSTEM account\n- **Frequency**: Every 15 minutes\n- **Timeout**: 1 hour\n- **Auto-restart**: Up to 3 retries on failure\n\n## Deployment\n\n### Prerequisites\n- PnP.PowerShell module installed\n- Azure AD App Registration with certificate uploaded\n- Certificate installed in LocalMachine store on REDWOOD\n- SharePoint API permissions granted and admin consent provided\n\n### Installation Location\n```\nE:\\Scripts\\GPCTransfer\\\n├── Move-GPCFilesToSharePoint.ps1\n├── Setup-ScheduledTask.ps1\n├── Test-GPCTransfer.ps1\n└── appsettings.json\n```\n\n### Setup Steps\n1. Install PnP.PowerShell module: `Install-Module PnP.PowerShell -Scope AllUsers`\n2. Create Azure AD App Registration and upload certificate\n3. Grant SharePoint API permissions (Sites.ReadWrite.All)\n4. Copy scripts and configuration to `E:\\Scripts\\GPCTransfer\\`\n5. Update `appsettings.json` with certificate thumbprint\n6. Test: `.\\Test-GPCTransfer.ps1`\n7. Create scheduled task: `.\\Setup-ScheduledTask.ps1`\n\n## Monitoring\n\n### Seq Dashboard Queries\n- **All GPC Transfer Events**: `Application = \"GPCTransfer\"`\n- **Errors Only**: `Application = \"GPCTransfer\" AND @Level = \"Error\"`\n- **Upload Success Rate**: View success/failure metrics in Seq\n\n### Task Management\n```powershell\n# View task status\nGet-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n\n# Start manually\nStart-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n\n# Disable/Enable\nDisable-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\nEnable-ScheduledTask -TaskName \"GPC-SharePoint-FileTransfer\"\n```\n\n## Testing\n\nRun the test script to validate the integration:\n```powershell\ncd E:\\Scripts\\GPCTransfer\n.\\Test-GPCTransfer.ps1\n```\n\nThe test script will:\n- Create sample PNG files in date-based folders\n- Run the main transfer script\n- Verify files were uploaded to SharePoint\n- Confirm source files were deleted\n\n## Status\n✅ **Complete** - Fully deployed and operational on REDWOOD server  \n✅ **Tested** - Successfully transfers PNG files to SharePoint  \n✅ **Monitored** - Logs visible in Seq dashboard  \n✅ **Automated** - Runs every 15 minutes via Windows Scheduled Task",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/15",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    },
+    {
+      "title": "New SQT Tool (CRAFT)",
+      "status": "closed",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2026-01-09T21:29:52Z",
+      "created": "2025-10-16T15:21:20Z",
+      "closed_at": "2026-01-09T21:29:52Z",
+      "number": 2,
+      "body": "## Overview\n\n**CRAFT** (Custom Request And Fabrication Tracker) is a modern WPF desktop application for tracking custom fabrication jobs through a multi-department workflow at MAPCO. Built with .NET 8.0 and MVVM architecture, it integrates with Syspro ERP databases to provide real-time job tracking, department routing, and status management.\n\n## Purpose\n\nReplace manual tracking processes for custom fabrication jobs with a centralized system that:\n- Tracks jobs from quote to shipment across SALES, PC (Production Control), and ENGINEERING departments\n- Authenticates users via Windows credentials and maps them to departments based on Syspro GroupCodes\n- Provides audit trails and timeline tracking for all job activities\n- Manages drawing templates and technical documentation for jobs\n- Prevents concurrent editing conflicts with multi-user job locking\n\n## Key Features\n\n### ✅ Completed\n\n#### Core Functionality\n- **Windows Authentication**: Auto-login via domain credentials (Environment.UserName)\n- **Department Mapping**: Automatic department assignment (SALES/PC/ENGINEERING/ADMIN) from Syspro GroupCodes\n- **Database Integration**: Connected to SysproCompanyB (job data) and Sysprodb (employee data)\n- **Employee Caching**: 60-minute cache for performance optimization\n- **MVVM Architecture**: Clean separation of UI and business logic\n\n#### Job Management\n- **Job Workflow Status Transitions**: QUOTE → SOLD → SHIPPED → CANCELED with validation rules (#3)\n- **Drawing Templates Feature**: Complete template library, upload/download, metadata management, search/filter (#4)\n- **Job Filtering and Search**: Filter by status, department, assignee, dates with live search (#7)\n- **Job Notes/Comments**: Collaboration system with timestamps and user attribution (#8)\n- **Database Schema**: Production table/column names finalized and queries updated (#5)\n\n#### Department Features\n- **Department Dashboard Views**: Customized views for SALES, PC, ENGINEERING, and ADMIN users (#9)\n- **Department Handoff Workflow**: Approval/rejection flows between departments\n- **Timeline Tracking**: Visual timeline with alerts for key milestones\n\n#### Multi-User Support\n- **Multi-User Job Locking System**: 3-phase locking prevents concurrent editing conflicts (#13)\n  - Phase 1: Lock acquisition/release with 30-minute expiration\n  - Phase 2: Optimistic concurrency with RowVersion column\n  - Phase 3: Real-time lock monitoring with visual warnings\n- **Test Mode for Department Testing**: Safe testing environment with test users (#14)\n  - Configuration-based user override\n  - Visual test mode indicator (red banner)\n  - Test users for all departments\n\n#### Testing & Quality\n- **Unit Testing Framework**: 75+ passing tests covering converters, services, and models (#12)\n  - xUnit, FluentAssertions, Moq\n  - Converter tests (39), Service tests (22), Model tests (14)\n- **Testing Infrastructure**: Seq logging server on MAPCO-SPARE-DT4 (#11)\n- **CRUD Operations**: Comprehensive end-to-end testing completed (#6)\n\n#### Reporting\n- **Basic Reporting**: Job metrics, completion times, department workload statistics (#10)\n\n### 📋 Planned (Future Enhancements)\n- Export functionality (Excel, PDF reports)\n- Email notifications for job status changes\n- Customer portal for quote status tracking\n- Mobile/web companion app\n- Advanced analytics and forecasting\n\n## Technical Stack\n\n- **Framework**: .NET 8.0-windows\n- **UI**: WPF with XAML\n- **Architecture**: MVVM pattern\n- **Database**: SQL Server (REDWOOD)\n  - Job data: SysproCompanyB (Windows Auth)\n  - Employee data: Sysprodb (SQL Auth)\n- **ORM**: ADO.NET with Dapper\n- **Logging**: Serilog with Seq integration\n- **Testing**: xUnit, FluentAssertions, Moq\n- **Dependencies**: Microsoft.Data.SqlClient, Microsoft.Data.Sqlite\n\n## Project Structure\n\n```\nCRAFT/\n├── Models/                 # Data models (CustomJob, Employee, etc.)\n├── ViewModels/             # MVVM view models\n├── Views/                  # XAML UI templates\n├── Services/               # Business logic (SqlServerService, EmployeeService)\n├── Helpers/                # Utilities (ObservableObject, RelayCommand)\n├── Converters/             # XAML value converters\n├── Documentation/          # Project docs and guides\n├── MerrittCRAFT.Tests/    # Unit tests (75+ tests)\n└── MerrittCRAFT.IntegrationTests/  # Integration tests\n```\n\n## Current Status\n\n**Version**: v1.0 - Beta  \n**Phase**: Testing & Refinement  \n**Deployment**: Ready for Pilot Testing  \n**Health**: ✅ On Track - All Core Features Complete\n\nSee `Documentation/PROJECT_STATUS.md` for detailed status updates.\n\n## Requirements\n\n### Department Workflow\n1. **SALES** creates job (QUOTE status)\n2. **PC** reviews and processes (SOLD status)\n3. **ENGINEERING** designs and approves\n4. Final shipment tracking (SHIPPED status)\n\n### User Roles\n- **SALES**: SLSAP, SLSAPM group codes\n- **PC**: PRDCFG, PRDDAT, PRDMGR, PRDPLN group codes\n- **ENGINEERING**: ENGIN group code\n- **ADMIN**: Full access to all features\n\n### Technical Requirements\n- Windows 10/11 (x64)\n- Network access to REDWOOD SQL Server\n- Windows domain authentication\n- .NET 8.0 runtime (or self-contained deployment)\n\n## Documentation\n\n- `Documentation/README.md` - Setup and onboarding guide\n- `Documentation/PROJECT_STATUS.md` - Current development status\n- `Documentation/CLAUDE.md` - Developer guidance and patterns\n- `Documentation/DEPARTMENT_TESTING_GUIDE.md` - Test mode usage guide\n- `TESTING_STRATEGY.md` - Unit testing and TDD approach\n- `INFRASTRUCTURE_SETUP.md` - Testing environment setup\n\n## Recent Milestones\n\n1. ✅ Complete job workflow status transitions (#3)\n2. ✅ Finish drawing templates feature (#4)\n3. ✅ Finalize database schema (#5)\n4. ✅ Test all CRUD operations end-to-end (#6)\n5. ✅ Implement job filtering and search (#7)\n6. ✅ Add job notes/comments functionality (#8)\n7. ✅ Build department dashboard views (#9)\n8. ✅ Create basic reporting (#10)\n9. ✅ Set up testing infrastructure (#11)\n10. ✅ Implement unit testing framework (#12)\n11. ✅ Implement multi-user job locking (#13)\n12. ✅ Implement test mode for department testing (#14)\n\n## Next Steps\n\n1. 📅 Internal pilot testing with select users from each department\n2. 📅 Gather feedback and iterate on UX improvements\n3. 📅 Performance testing with production data volumes\n4. 📅 Security audit and penetration testing\n5. 📅 Full department rollout\n6. 📅 Training materials and user documentation\n\n## Weekly Meeting\n\n**Schedule**: Tuesdays at 1:30pm  \n**Purpose**: Review progress, discuss blockers, plan next sprint",
+      "url": "https://github.com/royalvs/MAPCO-Programs/issues/2",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    }
+  ],
+  "mti": [
+    {
+      "title": "Paycom Data Sync Uplift and Vacation Time Pull",
+      "status": "open",
+      "labels": [
+        "gamma"
+      ],
+      "priority": "gamma",
+      "updated": "2025-11-18T23:10:08Z",
+      "created": "2025-11-18T23:10:08Z",
+      "closed_at": null,
+      "number": 2,
+      "body": "## Overview\n\nUplift the existing Paycom data synchronization system and expand functionality to include vacation time data for both MAPCO and MTI.\n\n**Target: Q1 2026**\n\n## Project Scope\n\n### Phase 1: System Uplift\n- Modernize existing Paycom sync infrastructure\n- Improve reliability and error handling\n- Enhance logging and monitoring capabilities\n\n### Phase 2: Vacation Time Integration\n- Add vacation time data to the list of information pulled from Paycom\n- Retrieve vacation balances for both MAPCO and MTI employees\n- Data will be delivered via the current Paycom SFTP server\n\n## Coordination\n\nRoyal will work with Terri Cornelius at Merritt Companies to configure vacation data exports for both companies to the existing Paycom SFTP server.\n\n## Technical Notes\n\n- Integration with existing SFTP file processing pipeline\n- Data will sync to Syspro employee records\n- Serilog structured logging with Seq integration\n\n## Meetings\n\nBi-weekly project update meetings - schedule TBD",
+      "url": "https://github.com/royalvs/MTI-Programs/issues/2",
+      "assignees": [],
+      "milestone": null
+    },
+    {
+      "title": "TrailerQuoteMonitor - DriveWorks to REDWOOD Database Integration",
+      "status": "open",
+      "labels": [
+        "alpha"
+      ],
+      "priority": "alpha",
+      "updated": "2025-10-30T19:08:05Z",
+      "created": "2025-10-30T19:01:04Z",
+      "closed_at": null,
+      "number": 1,
+      "body": "## Overview\nWindows Service that monitors BANYAN file server for new trailer quote folders from DriveWorks and automatically uploads quote data to REDWOOD database.\n\n## Current Status\n- Initial implementation complete\n- Service monitors BANYAN DriveWorks Group Content Testing Specifications\n- Processes QuoteInfo CSV files\n- Trailer Options processing - pending data availability\n- Inserts data into MEC_TrailerQuoteMaster and MEC_TrailerQuoteDetails tables\n- Test mode available for manual quote processing\n- CLAUDE.md documentation created\n\n## Project Location\nMTI-Programs/DriveWorksToQuoterUpload\n\n## Technology Stack\n- .NET 9.0 Windows Service\n- CsvHelper for CSV processing\n- SQL Server (REDWOOD/SysproCompanyT test database)\n- FileSystemWatcher for real-time monitoring\n\n## Key Features\n- Automatic folder monitoring with pattern matching\n- Atomic database transactions\n- SqlBulkCopy for efficient detail record insertion\n- Test mode for manual quote processing\n- Comprehensive logging (Event Log + file logs)\n\n## Related Projects\nThis is part 1 of the Pipedrive Integration project. A second program for the other direction of integration is planned.\n\n## Next Steps\n- Wait for Trailer Options data to be filled out\n- Complete Trailer Options processing implementation\n- Test with real quote data from DriveWorks\n- Deploy to production server\n- Configure as Windows Service",
+      "url": "https://github.com/royalvs/MTI-Programs/issues/1",
+      "assignees": [
+        "royalvs"
+      ],
+      "milestone": null
+    }
+  ],
+  "lastUpdate": "2026-04-27T20:56:28.202Z",
   "generatedBy": "Servo-Skull Scriptum-Vigil-Gamma-7"
 }
